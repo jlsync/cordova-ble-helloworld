@@ -29,13 +29,42 @@ app.onDeviceReady = function()
 
   setTimeout( function(){
 
-    var ref = window.open('http://jlchat.herokuapp.com/wall_login', '_blank', 'location=yes');
+    var win = window.open('http://jlchat.herokuapp.com/wall_login', '_blank', 'location=yes');
 
+    /*
     ref.addEventListener('loadstart', function(event){
       if (( event.url == 'http://jlchat.herokuapp.com/wall') || (event.url == 'https://jlchat.herokuapp.com/wall') ) {
         ref.close();
       }
     });
+    */
+
+    var loop = setInterval( function() {
+      win.executeScript( {
+        code: "localStorage.getItem('on')"
+      },
+      function(values){
+        var on = values[0];
+        console.log("on is " + on);
+        console.log("values is " + values);
+
+        if (on == 'yes')
+        {
+          if ((!app.scanning) || (app.scanning == false))
+          {
+            app.ui.onStartScanButton();
+          }
+        }
+        else
+        {
+          if (app.scanning == true)
+          {
+            app.ui.onStopScanButton();
+          }
+        }
+
+      });
+    }, 1000);
 
   }, 1000);
 
@@ -49,6 +78,7 @@ app.onDeviceReady = function()
 app.startScan = function(callbackFun)
 {
 	app.stopScan();
+  app.scanning = true;
 	iBeacon.startScan({ nice_uuid: '20cae8a0a9cf11e3a5e20800200c9a66' },
 		function(device)
 		{
@@ -67,6 +97,7 @@ app.startScan = function(callbackFun)
 app.stopScan = function()
 {
 	evothings.ble.stopScan();
+  app.scanning = false;
 };
 
 // Called when Start Scan button is selected.
@@ -149,7 +180,7 @@ app.ui.displayDeviceList = function()
 			+	'<b>' + device.name + '</b><br/>'
 			+	device.address + '<br/>'
       + device.rssi+"/"+device.txPower + "\u00A0" + device.estimatedDistance.toFixed(2) + 'm' + '<br/>'
-			+	 device.nice_major + " \u00A0 "+ device.nice_minor + '<br/>'
+			+	device.nice_major + " \u00A0 "+ device.nice_minor + '<br/>'
       + device.nice_uuid
 			+ '</li>'
 		);
