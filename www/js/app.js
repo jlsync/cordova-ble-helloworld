@@ -29,7 +29,7 @@ app.onDeviceReady = function()
 
   setTimeout( function(){
 
-    var win = window.open('http://jlchat.herokuapp.com/wall_login', '_blank', 'location=yes');
+    var win = window.open('https://jlchat.herokuapp.com/wall_login', '_blank', 'location=no');
 
     /*
     ref.addEventListener('loadstart', function(event){
